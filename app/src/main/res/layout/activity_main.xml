@@ -11,6 +11,7 @@
         android:layout_height="100dp"
         android:padding="10dp">
         <TextView
+            android:id="@+id/main_todayTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="11.06"
@@ -23,6 +24,7 @@
         android:layout_height="420dp"
         android:padding="10dp">
         <GridView
+            android:id="@+id/main_calendarGv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:numColumns="7">
@@ -35,6 +37,7 @@
         android:layout_height="match_parent"
         android:padding="10dp">
         <ListView
+            android:id="@+id/main_memoLv"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
