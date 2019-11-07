@@ -9,7 +9,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:padding="10dp">
+        android:layout_margin="10dp"
+        android:background="@drawable/border">
         <TextView
             android:id="@+id/main_todayTv"
             android:layout_width="wrap_content"
@@ -21,12 +22,14 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="420dp"
-        android:padding="10dp">
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp">
         <GridView
             android:id="@+id/main_calendarGv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="360dp"
+            android:scrollbars="none"
             android:numColumns="7">
 
         </GridView>
@@ -35,7 +38,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp">
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/border">
         <ListView
             android:id="@+id/main_memoLv"
             android:layout_width="match_parent"

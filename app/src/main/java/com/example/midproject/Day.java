@@ -1,6 +1,11 @@
 package com.example.midproject;
 
 public class Day {
-    int date;
+    String date;
     String preView;
+
+    public Day(String date, String preView) {
+        this.date = date;
+        this.preView = preView;
+    }
 }
