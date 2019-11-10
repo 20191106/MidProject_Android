@@ -192,21 +192,52 @@ public class MainActivity extends AppCompatActivity{
         final AlertDialog.Builder ab = new AlertDialog.Builder((this));
         ab.setView(v2);
 
-        final Button quitBtnNo = v2.findViewById(R.id.quitBtnNo);
-        final Button quitBtnYes = v2.findViewById(R.id.quitBtnYes);
+        final Button memoview_noBtn = findViewById(R.id.memoview_noBtn);
+        final Button memoview_yesBtn = findViewById(R.id.memoview_yesBtn);
 
         final AlertDialog temp = ab.create();
 
-        quitBtnNo.setOnClickListener(new View.OnClickListener() {
+        memoview_noBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                temp.dismiss();
+                //삭제
+                //delete db, pop down
             }
         });
-        quitBtnYes.setOnClickListener(new View.OnClickListener() {
+        memoview_yesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                //수정
+                //popup memo edit
+            }
+        });
+        temp.show();
+    }
+
+    public void popUpMemoEdit() {
+        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        View v2 = (View)inflater.inflate(R.layout.memoedit, null);
+
+        final AlertDialog.Builder ab = new AlertDialog.Builder((this));
+        ab.setView(v2);
+
+        final Button memoedit_noBtn = findViewById(R.id.memoedit_noBtn);
+        final Button memoedit_yesBtn = findViewById(R.id.memoedit_yesBtn);
+
+        final AlertDialog temp = ab.create();
+
+        memoedit_noBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //취소
+                //just pop down
+            }
+        });
+        memoedit_yesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //확인
+                //update db
             }
         });
         temp.show();
