@@ -3,8 +3,32 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <RelativeLayout
+        android:id="@+id/memoedit_head"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+        <TextView
+            android:id="@+id/memoedit_dateTv"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:text="day"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:background="@drawable/border"/>
+        <Button
+            android:id="@+id/memoedit_closeBtn"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:text="←"
+            android:textSize="20dp"
+            android:gravity="center"/>
+    </RelativeLayout>
+
     <EditText
         android:id="@+id/memoedit_Et"
+        android:layout_below="@id/memoedit_head"
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:text="context"
@@ -14,14 +38,14 @@
         android:background="@drawable/border"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/memoedit_Et"
         android:gravity="center">
         <Button
             android:id="@+id/memoedit_noBtn"
             android:layout_width="150dp"
             android:layout_height="80dp"
-            android:text="no"
+            android:text="취소"
             android:textSize="20dp"/>
         <Button
             android:id="@+id/memoedit_yesBtn"
@@ -29,7 +53,7 @@
             android:layout_marginLeft="30dp"
             android:layout_width="150dp"
             android:layout_height="80dp"
-            android:text="yes"
+            android:text="확인"
             android:textSize="20dp"/>
     </RelativeLayout>
 </RelativeLayout>

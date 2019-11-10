@@ -38,7 +38,7 @@ public class DbSetting {
     public static void deleteDB(int _id, Context con){
         SQLiteDatabase db = con.openOrCreateDatabase("my_db.db", Context.MODE_PRIVATE, null);
 
-        db.execSQL("");
+        db.execSQL("DELETE FROM myDb WHERE _id = '" + _id + "'");
 
         db.close();
     }
@@ -47,6 +47,14 @@ public class DbSetting {
         SQLiteDatabase db = con.openOrCreateDatabase("my_db.db", Context.MODE_PRIVATE, null);
 
         db.execSQL("UPDATE myDb SET year = '" + year + "', month = '" + month + "', day = '" + day + "', context = '" + context + "' WHERE _id = '" + _id + "'");
+
+        db.close();
+    }
+
+    public static void updateDB(int _id, String context, Context con){
+        SQLiteDatabase db = con.openOrCreateDatabase("my_db.db", Context.MODE_PRIVATE, null);
+
+        db.execSQL("UPDATE myDb SET context = '" + context + "' WHERE _id = '" + _id + "'");
 
         db.close();
     }

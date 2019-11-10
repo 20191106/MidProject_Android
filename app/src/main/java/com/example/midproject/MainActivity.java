@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity{
         memoLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO popup
+                popUpMemoView(position);
             }
         });
 
@@ -95,13 +95,12 @@ public class MainActivity extends AppCompatActivity{
 
     private void setMain_todayTv(){
         Calendar cal = Calendar.getInstance();
-        main_todayTv.setText(cal.get(Calendar.YEAR) + "." + cal.get(Calendar.MONTH) + 1 + "");
+        main_todayTv.setText(cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "");
     }
 
     private void getFromDB(){
 
         // 1
-        // TODO add month, year data
         arrDay.clear();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DATE, 1);
@@ -170,11 +169,9 @@ public class MainActivity extends AppCompatActivity{
     }
 
     private void setMemoLv(Calendar cal){
-        Log.d("ah", "Gv_day : " + cal.get(Calendar.DATE));
-        Log.d("ah", "Lv_selection : " + getNewestMemo(cal));
-
         adapter_Lv.notifyDataSetChanged();
-        handler.sendEmptyMessageDelayed(getNewestMemo(cal),500);
+        //handler.sendEmptyMessageDelayed(getNewestMemo(cal),500);
+        //TODO remove msg
     }
 
     Handler handler = new Handler(){
@@ -185,23 +182,36 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
-    public void popUpMemoView() {
-        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+    private String todayString(){
+        Calendar cal = Calendar.getInstance();
+        String s = cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DATE);
+        return s;
+    }
+
+    public void popUpMemoView(final int position) {
+        final LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         View v2 = (View)inflater.inflate(R.layout.memoview, null);
 
         final AlertDialog.Builder ab = new AlertDialog.Builder((this));
         ab.setView(v2);
 
-        final Button memoview_noBtn = findViewById(R.id.memoview_noBtn);
-        final Button memoview_yesBtn = findViewById(R.id.memoview_yesBtn);
+        final TextView memoview_Tv = v2.findViewById(R.id.memoview_Tv);
+        final Button memoview_noBtn = v2.findViewById(R.id.memoview_noBtn);
+        final Button memoview_yesBtn = v2.findViewById(R.id.memoview_yesBtn);
+        final TextView memoview_dateTv = v2.findViewById(R.id.memoview_dateTv);
+        final Button memoview_closeBtn = v2.findViewById(R.id.memoview_closeBtn);
 
         final AlertDialog temp = ab.create();
+
+        memoview_Tv.setText(arrMemo.get(position).context);
+        memoview_dateTv.setText(todayString());
 
         memoview_noBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //삭제
                 //delete db, pop down
+                popUpDeleteConfirm(position, temp);
             }
         });
         memoview_yesBtn.setOnClickListener(new View.OnClickListener() {
@@ -209,28 +219,42 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 //수정
                 //popup memo edit
+                popUpMemoEdit(position);
+            }
+        });
+        memoview_closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                temp.dismiss();
             }
         });
         temp.show();
     }
 
-    public void popUpMemoEdit() {
+    public void popUpMemoEdit(final int position) {
         LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         View v2 = (View)inflater.inflate(R.layout.memoedit, null);
 
         final AlertDialog.Builder ab = new AlertDialog.Builder((this));
         ab.setView(v2);
 
-        final Button memoedit_noBtn = findViewById(R.id.memoedit_noBtn);
-        final Button memoedit_yesBtn = findViewById(R.id.memoedit_yesBtn);
+        final TextView memoedit_Et = v2.findViewById(R.id.memoedit_Et);
+        final Button memoedit_noBtn = v2.findViewById(R.id.memoedit_noBtn);
+        final Button memoedit_yesBtn = v2.findViewById(R.id.memoedit_yesBtn);
+        final TextView memoedit_dateTv = v2.findViewById(R.id.memoedit_dateTv);
+        final Button memoedit_closeBtn = v2.findViewById(R.id.memoedit_closeBtn);
 
         final AlertDialog temp = ab.create();
+
+        memoedit_Et.setText(arrMemo.get(position).context);
+        memoedit_dateTv.setText(todayString());
 
         memoedit_noBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //취소
                 //just pop down
+                popUpCancelConfirm(temp);
             }
         });
         memoedit_yesBtn.setOnClickListener(new View.OnClickListener() {
@@ -238,9 +262,80 @@ public class MainActivity extends AppCompatActivity{
             public void onClick(View v) {
                 //확인
                 //update db
+                DbSetting.updateDB(arrMemo.get(position)._id, memoedit_Et.getText().toString(), MainActivity.this);
+                getFromDB();
+                temp.dismiss();
+                //TODO 수정내용 바로 적용되게
+            }
+        });
+        memoedit_closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                temp.dismiss();
             }
         });
         temp.show();
     }
 
+    public void popUpDeleteConfirm(final int position, final AlertDialog parentDialog){
+        final LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        View vCon = (View)inflater.inflate(R.layout.confirm, null);
+
+        final AlertDialog.Builder ab = new AlertDialog.Builder((this));
+        ab.setView(vCon);
+
+        final AlertDialog confirmDialog = ab.create();
+        final TextView confirm_Tv = vCon.findViewById(R.id.confirm_Tv);
+        final Button confirm_noBtn = vCon.findViewById(R.id.confirm_noBtn);
+        final Button confirm_yesBtn = vCon.findViewById(R.id.confirm_yesBtn);
+
+        confirm_Tv.setText("삭제 하시겠습니까 ?");
+        confirm_noBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                confirmDialog.dismiss();
+            }
+        });
+        confirm_yesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DbSetting.deleteDB(arrMemo.get(position)._id, MainActivity.this);
+                getFromDB();
+                confirmDialog.dismiss();
+                parentDialog.dismiss();
+            }
+        });
+
+        confirmDialog.show();
+    }
+
+    public void popUpCancelConfirm(final AlertDialog parentDialog){
+        final LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        View vCon = (View)inflater.inflate(R.layout.confirm, null);
+
+        final AlertDialog.Builder ab = new AlertDialog.Builder((this));
+        ab.setView(vCon);
+
+        final AlertDialog confirmDialog = ab.create();
+        final TextView confirm_Tv = vCon.findViewById(R.id.confirm_Tv);
+        final Button confirm_noBtn = vCon.findViewById(R.id.confirm_noBtn);
+        final Button confirm_yesBtn = vCon.findViewById(R.id.confirm_yesBtn);
+
+        confirm_Tv.setText("취소 하시겠습니까 ?");
+        confirm_noBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                confirmDialog.dismiss();
+            }
+        });
+        confirm_yesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                confirmDialog.dismiss();
+                parentDialog.dismiss();
+            }
+        });
+
+        confirmDialog.show();
+    }
 }

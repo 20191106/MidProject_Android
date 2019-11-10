@@ -56,7 +56,7 @@ public class MyAdapter_Memo extends ArrayAdapter {
         }
 
         viewHolder.dateTv.setText(arrMemo.get(position).date.get(Calendar.DATE) + "");
-        viewHolder.preViewTv.setText(arrMemo.get(position).context + "  " + position);
+        viewHolder.preViewTv.setText(arrMemo.get(position).context);
 
         return convertView;
     }
