@@ -12,7 +12,7 @@
             android:id="@+id/memoview_dateTv"
             android:layout_width="150dp"
             android:layout_height="50dp"
-            android:text="day"
+            android:text=""
             android:textSize="20dp"
             android:gravity="center"
             android:background="@drawable/border"/>
@@ -27,18 +27,35 @@
     <TextView
         android:id="@+id/memoview_Tv"
         android:layout_below="@id/memoview_head"
+        android:layout_above="@id/memoview_tail"
+        android:visibility="visible"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
-        android:text="context"
+        android:layout_height="match_parent"
+        android:text=""
         android:layout_margin="10dp"
         android:padding="10dp"
         android:gravity="left|top"
         android:background="@drawable/border"/>
-    <RelativeLayout
+
+    <EditText
+        android:id="@+id/memoview_Et"
+        android:layout_below="@id/memoview_head"
+        android:layout_above="@id/memoview_tail"
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/memoview_Tv"
-        android:gravity="center">
+        android:layout_height="match_parent"
+        android:text=""
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:gravity="left|top"
+        android:background="@drawable/border"/>
+
+    <RelativeLayout
+        android:id="@+id/memoview_tail"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:gravity="center"
+        android:layout_alignParentBottom="true">
         <Button
             android:id="@+id/memoview_noBtn"
             android:layout_width="150dp"

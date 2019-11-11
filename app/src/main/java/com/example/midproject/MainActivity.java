@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -33,25 +34,28 @@ public class MainActivity extends AppCompatActivity{
     TextView main_todayTv;
     MyAdapter adapter_Gv;
     MyAdapter_Memo adapter_Lv;
+    Button main_pastBtn;
+    Button main_futureBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final Calendar cal = Calendar.getInstance();
+
         calendarGv = findViewById(R.id.main_calendarGv);
         memoLv = findViewById(R.id.main_memoLv);
         memoLv.requestFocusFromTouch();
         main_todayTv = findViewById(R.id.main_todayTv);
+        main_pastBtn = findViewById(R.id.main_pastBtn);
+        main_futureBtn = findViewById(R.id.main_futureBtn);
 
         calendarGv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //TODO add month, year data
-                //TODO add color today
                 if (!arrDay.get(position).date.equals("")){
                     calendarGv.setVisibility(View.GONE);
-                    Calendar cal = Calendar.getInstance();
                     cal.set(Calendar.DATE, Integer.parseInt(arrDay.get(position).date));
                     setMemoLv(cal);
                 }
@@ -61,7 +65,27 @@ public class MainActivity extends AppCompatActivity{
         memoLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                popUpMemoView(position);
+                if (position == 0)
+                    popUpMemoNew();
+                    //TODO 추가하기가 항상 맨위로 오도록
+                else
+                    popUpMemoView(position);
+            }
+        });
+
+        main_pastBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cal.add(Calendar.MONTH,-1);
+                getFromDB(cal);
+            }
+        });
+
+        main_futureBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cal.add(Calendar.MONTH,1);
+                getFromDB(cal);
             }
         });
 
@@ -70,39 +94,25 @@ public class MainActivity extends AppCompatActivity{
         adapter_Lv = new MyAdapter_Memo(this, arrMemo);
         memoLv.setAdapter((adapter_Lv));
 
-        DbSetting.dbInit(this);
-
 //        //test
 //        DbSetting.clearDB(this);
-//        DbSetting.dbInit(this);
-//        DbSetting.insertDB(2019, 8, 7, "9/7", this);
-//        DbSetting.insertDB(2019, 7, 7, "8/14", this);
-//        DbSetting.insertDB(2019, 4, 7, "5/5", this);
-//        DbSetting.insertDB(2019, 2, 7, "3/7", this);
-//        DbSetting.insertDB(2019, 9, 16, "10/16", this);
-//        DbSetting.insertDB(2019, 9, 21, "10/21", this);
-//        DbSetting.insertDB(2019, 9, 28, "10/28", this);
-//        DbSetting.insertDB(2019, 9, 29, "10/29 _ 할일1", this);
-//        DbSetting.insertDB(2019, 9, 29, "10/29 _ 할일2", this);
-//
-//        for (int i = 1; i < 31; i++){
-//            DbSetting.insertDB(2019, 10, i, i + "일할일", this);
-//        }
+//        //test
 
-        getFromDB();
-        setMain_todayTv();
+        DbSetting.dbInit(this);
+
+        getFromDB(cal);
     }
 
-    private void setMain_todayTv(){
-        Calendar cal = Calendar.getInstance();
+    private void setMain_todayTv(Calendar cal){
         main_todayTv.setText(cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "");
     }
 
-    private void getFromDB(){
+    private void getFromDB(Calendar cal){
+        setMain_todayTv(cal);
+        setMemoLv(cal);
 
         // 1
         arrDay.clear();
-        Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DATE, 1);
         int startDay = cal.get(Calendar.DAY_OF_WEEK);
         int max = cal.getActualMaximum(Calendar.DATE);
@@ -113,10 +123,8 @@ public class MainActivity extends AppCompatActivity{
         for (int i = 0; i < max; i ++){
             arrDay.add(new Day((i + 1) + "", ""));
         }
-        if (cal.get(Calendar.DAY_OF_WEEK_IN_MONTH) <= 5){
-            for (int i = 0; i < 7; i++){
-                arrDay.add(new Day("", ""));
-            }
+        for (int i = 0; i < 43 - startDay - max; i++){
+            arrDay.add(new Day("", ""));
         }
 
         // 2
@@ -124,8 +132,8 @@ public class MainActivity extends AppCompatActivity{
         Cursor c = db.rawQuery("SELECT * FROM myDb ORDER BY year, month, day", null);
         c.moveToFirst();
         arrMemo.clear();
+        arrMemo.add(new Memo(-1, cal, "새로운 메모 추가하기"));
         while (c.isAfterLast() == false) {
-            cal = Calendar.getInstance();
             Calendar memoCal = Calendar.getInstance();
             memoCal.set(c.getInt(1), c.getInt(2), c.getInt(3));
             String context = c.getString(4);
@@ -135,7 +143,7 @@ public class MainActivity extends AppCompatActivity{
             }
             c.moveToNext();
         }
-        setMemoLv(cal);
+
         adapter_Gv.notifyDataSetChanged();
 
         c.close();
@@ -170,8 +178,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void setMemoLv(Calendar cal){
         adapter_Lv.notifyDataSetChanged();
-        //handler.sendEmptyMessageDelayed(getNewestMemo(cal),500);
-        //TODO remove msg
+        handler.sendEmptyMessageDelayed(getNewestMemo(cal),500);
     }
 
     Handler handler = new Handler(){
@@ -188,6 +195,12 @@ public class MainActivity extends AppCompatActivity{
         return s;
     }
 
+    private String dateToString(Calendar cal){
+        return cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DATE);
+    }
+
+    boolean isEditMode = false;
+
     public void popUpMemoView(final int position) {
         final LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
         View v2 = (View)inflater.inflate(R.layout.memoview, null);
@@ -199,30 +212,119 @@ public class MainActivity extends AppCompatActivity{
         final Button memoview_noBtn = v2.findViewById(R.id.memoview_noBtn);
         final Button memoview_yesBtn = v2.findViewById(R.id.memoview_yesBtn);
         final TextView memoview_dateTv = v2.findViewById(R.id.memoview_dateTv);
+        final EditText memoview_Et = v2.findViewById(R.id.memoview_Et);
         final Button memoview_closeBtn = v2.findViewById(R.id.memoview_closeBtn);
 
         final AlertDialog temp = ab.create();
 
         memoview_Tv.setText(arrMemo.get(position).context);
-        memoview_dateTv.setText(todayString());
+        memoview_Et.setText(arrMemo.get(position).context);
+        memoview_dateTv.setText(dateToString(arrMemo.get(position).date));
 
         memoview_noBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //삭제
-                //delete db, pop down
-                popUpDeleteConfirm(position, temp);
+                if (isEditMode){
+                    //취소
+                    //just pop down
+                    popUpCancelConfirm(temp);
+                }
+                else{
+                    //삭제
+                    //delete db, pop down
+                    popUpDeleteConfirm(position, temp);
+                }
             }
         });
         memoview_yesBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //수정
-                //popup memo edit
-                popUpMemoEdit(position);
+                if(isEditMode){
+                    //확인
+                    //update db
+                    DbSetting.updateDB(arrMemo.get(position)._id, memoview_Et.getText().toString(), MainActivity.this);
+                    getFromDB(arrMemo.get(position).date);
+                    memoview_Tv.setText(arrMemo.get(position).context);
+
+                    memoview_noBtn.setText("삭제");
+                    memoview_yesBtn.setText("수정");
+                    memoview_closeBtn.setText("X");
+                    memoview_Et.setVisibility(View.GONE);
+                    memoview_Tv.setVisibility(View.VISIBLE);
+                    isEditMode = false;
+                }
+                else{
+                    //수정
+                    //view -> edit
+                    memoview_noBtn.setText("취소");
+                    memoview_yesBtn.setText("확인");
+                    memoview_closeBtn.setText("<-");
+                    memoview_Et.setVisibility(View.VISIBLE);
+                    memoview_Tv.setVisibility(View.GONE);
+                    isEditMode = true;
+                }
             }
         });
         memoview_closeBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isEditMode){
+                    memoview_noBtn.setText("취소");
+                    memoview_yesBtn.setText("확인");
+                    memoview_closeBtn.setText("X");
+                    memoview_Et.setVisibility(View.GONE);
+                    memoview_Tv.setVisibility(View.VISIBLE);
+                    isEditMode = false;
+                }
+                else{
+                    temp.dismiss();
+                }
+            }
+        });
+        temp.show();
+    }
+    
+    public void popUpMemoNew() {
+        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
+        View v2 = (View)inflater.inflate(R.layout.memonew, null);
+
+        final AlertDialog.Builder ab = new AlertDialog.Builder((this));
+        ab.setView(v2);
+
+        final EditText memonew_Et = v2.findViewById(R.id.memonew_Et);
+        final EditText memonew_yearEt = v2.findViewById(R.id.memonew_yearEt);
+        final EditText memonew_monthEt = v2.findViewById(R.id.memonew_monthEt);
+        final EditText memonew_dateEt = v2.findViewById(R.id.memonew_dateEt);
+        final Button memonew_closeBtn = v2.findViewById(R.id.memonew_closeBtn);
+        final Button memonew_noBtn = v2.findViewById(R.id.memonew_noBtn);
+        final Button memonew_yesBtn = v2.findViewById(R.id.memonew_yesBtn);
+
+        final AlertDialog temp = ab.create();
+
+        final Calendar cal = Calendar.getInstance();
+        memonew_yearEt.setText(cal.get(Calendar.YEAR) + "");
+        memonew_monthEt.setText((cal.get(Calendar.MONTH) + 1) + "");
+        memonew_dateEt.setText(cal.get(Calendar.DATE) + "");
+
+        memonew_noBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //취소
+                //just pop down
+                popUpCancelConfirm(temp);
+            }
+        });
+        memonew_yesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //저장
+                //insert db
+                DbSetting.insertDB(etToInt(memonew_yearEt), etToInt(memonew_monthEt) - 1, etToInt(memonew_dateEt), memonew_Et.getText().toString(), MainActivity.this);
+                getFromDB(cal);
+                temp.dismiss();
+            }
+        });
+        memonew_closeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 temp.dismiss();
@@ -231,50 +333,8 @@ public class MainActivity extends AppCompatActivity{
         temp.show();
     }
 
-    public void popUpMemoEdit(final int position) {
-        LayoutInflater inflater = (LayoutInflater)getSystemService(LAYOUT_INFLATER_SERVICE);
-        View v2 = (View)inflater.inflate(R.layout.memoedit, null);
-
-        final AlertDialog.Builder ab = new AlertDialog.Builder((this));
-        ab.setView(v2);
-
-        final TextView memoedit_Et = v2.findViewById(R.id.memoedit_Et);
-        final Button memoedit_noBtn = v2.findViewById(R.id.memoedit_noBtn);
-        final Button memoedit_yesBtn = v2.findViewById(R.id.memoedit_yesBtn);
-        final TextView memoedit_dateTv = v2.findViewById(R.id.memoedit_dateTv);
-        final Button memoedit_closeBtn = v2.findViewById(R.id.memoedit_closeBtn);
-
-        final AlertDialog temp = ab.create();
-
-        memoedit_Et.setText(arrMemo.get(position).context);
-        memoedit_dateTv.setText(todayString());
-
-        memoedit_noBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //취소
-                //just pop down
-                popUpCancelConfirm(temp);
-            }
-        });
-        memoedit_yesBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //확인
-                //update db
-                DbSetting.updateDB(arrMemo.get(position)._id, memoedit_Et.getText().toString(), MainActivity.this);
-                getFromDB();
-                temp.dismiss();
-                //TODO 수정내용 바로 적용되게
-            }
-        });
-        memoedit_closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                temp.dismiss();
-            }
-        });
-        temp.show();
+    private int etToInt(EditText et){
+        return Integer.parseInt(et.getText().toString().trim());
     }
 
     public void popUpDeleteConfirm(final int position, final AlertDialog parentDialog){
@@ -300,7 +360,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View v) {
                 DbSetting.deleteDB(arrMemo.get(position)._id, MainActivity.this);
-                getFromDB();
+                getFromDB(arrMemo.get(position).date);
                 confirmDialog.dismiss();
                 parentDialog.dismiss();
             }

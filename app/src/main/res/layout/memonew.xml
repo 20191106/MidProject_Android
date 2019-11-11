@@ -4,34 +4,54 @@
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:id="@+id/memoedit_head"
+        android:id="@+id/memonew_head"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp">
-        <TextView
-            android:id="@+id/memoedit_dateTv"
-            android:layout_width="150dp"
+        <EditText
+            android:id="@+id/memonew_yearEt"
+            android:layout_width="100dp"
             android:layout_height="50dp"
-            android:text="day"
+            android:text="year"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:background="@drawable/border"/>
+        <EditText
+            android:id="@+id/memonew_monthEt"
+            android:layout_toRightOf="@id/memonew_yearEt"
+            android:layout_marginLeft="10dp"
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:text="month"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:background="@drawable/border"/>
+        <EditText
+            android:id="@+id/memonew_dateEt"
+            android:layout_toRightOf="@id/memonew_monthEt"
+            android:layout_marginLeft="10dp"
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:text="date"
             android:textSize="20dp"
             android:gravity="center"
             android:background="@drawable/border"/>
         <Button
-            android:id="@+id/memoedit_closeBtn"
+            android:id="@+id/memonew_closeBtn"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentRight="true"
-            android:text="←"
+            android:text="X"
             android:textSize="20dp"
             android:gravity="center"/>
     </RelativeLayout>
 
     <EditText
-        android:id="@+id/memoedit_Et"
-        android:layout_below="@id/memoedit_head"
+        android:id="@+id/memonew_Et"
+        android:layout_below="@id/memonew_head"
         android:layout_width="match_parent"
         android:layout_height="450dp"
-        android:text="context"
+        android:text=""
         android:layout_margin="10dp"
         android:padding="10dp"
         android:gravity="left|top"
@@ -39,22 +59,21 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/memoedit_Et"
+        android:layout_below="@+id/memonew_Et"
         android:gravity="center">
         <Button
-            android:id="@+id/memoedit_noBtn"
+            android:id="@+id/memonew_noBtn"
             android:layout_width="150dp"
             android:layout_height="80dp"
             android:text="취소"
             android:textSize="20dp"/>
         <Button
-            android:id="@+id/memoedit_yesBtn"
-            android:layout_toRightOf="@+id/memoedit_noBtn"
+            android:id="@+id/memonew_yesBtn"
+            android:layout_toRightOf="@+id/memonew_noBtn"
             android:layout_marginLeft="30dp"
             android:layout_width="150dp"
             android:layout_height="80dp"
-            android:text="확인"
+            android:text="저장"
             android:textSize="20dp"/>
     </RelativeLayout>
 </RelativeLayout>
-
