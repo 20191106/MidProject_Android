@@ -2,6 +2,7 @@ package com.example.midproject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ class MyAdapter extends ArrayAdapter {
         super(context, R.layout.calendar, arrDay);
         lnf = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
         this.arrDay = arrDay;
     }
 

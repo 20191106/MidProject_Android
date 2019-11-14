@@ -4,71 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:orientation="vertical">
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/border">
-        <Button
-            android:id="@+id/main_pastBtn"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="◀"
-            android:textSize="25sp"
-            android:layout_toLeftOf="@+id/main_todayTv"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
-            android:background="#00111111"/>
-        <TextView
-            android:id="@+id/main_todayTv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="11.06"
-            android:textSize="30sp"
-            android:layout_centerInParent="true"/>
-        <Button
-            android:id="@+id/main_futureBtn"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:text="▶"
-            android:textSize="25sp"
-            android:layout_toRightOf="@+id/main_todayTv"
-            android:layout_centerVertical="true"
-            android:layout_margin="10dp"
-            android:background="#00111111"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/layout_calendar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginBottom="10dp">
-        <GridView
-            android:id="@+id/main_calendarGv"
-            android:layout_width="match_parent"
-            android:layout_height="360dp"
-            android:scrollbars="none"
-            android:numColumns="7">
-
-        </GridView>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/border">
-        <ListView
-            android:id="@+id/main_memoLv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="10dp">
-
-        </ListView>
-    </RelativeLayout>
+    android:orientation="vertical"
+    android:id="@+id/mainLayout">
 
 </LinearLayout>
